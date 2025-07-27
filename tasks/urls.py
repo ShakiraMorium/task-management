@@ -12,7 +12,7 @@ urlpatterns = [
     path('task/<int:task_id>/details/',TaskDetail.as_view(), name='task-details'),
     # path('update-task/<int:id>/', update_task, name='update-task'),
     path('update-task/<int:id>/', UpdateTask.as_view(), name='update-task'),
-    path('delete-task/<int:id>/', delete_task, name='delete-task'),
+    path('delete-task/<int:id>/', DeleteTask.as_view(), name='delete-task'),
     path('dashboard/', dashboard, name='dashboard'),
     path('greetings/', HiHowGreetings.as_view(greetings='Hi Good Day!'), name='greetings'),
     # path('hi there/', HiHowGreetings.as_view(greeting="G'day")),

@@ -412,7 +412,8 @@ class CreateTask(LoginRequiredMixin, PermissionRequiredMixin, View):
         return render(request, self.template_name, context)
 
 # Task Update
-class UpdateTaskCBV(LoginRequiredMixin, PermissionRequiredMixin, View):
+@login_required
+class UpdateTask(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'tasks.change_task'
     login_url = 'sign-in'
     template_name = 'task_form.html'
@@ -439,6 +440,7 @@ class UpdateTaskCBV(LoginRequiredMixin, PermissionRequiredMixin, View):
         return render(request, self.template_name, {'task_form': task_form, 'task_detail_form': task_detail_form})
 
 # Task Delete
+@login_required
 class DeleteTask(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'tasks.delete_task'
     login_url = 'sign-in'
@@ -450,6 +452,7 @@ class DeleteTask(LoginRequiredMixin, PermissionRequiredMixin, View):
         return redirect('manager-dashboard')
 
 # View Tasks by Project
+@login_required
 class ViewTaskByProject(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Project
     template_name = 'show_task.html'
@@ -460,7 +463,8 @@ class ViewTaskByProject(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         return Project.objects.annotate(num_task=Count('task')).order_by('num_task')
 
 # Task Detail View
-class TaskDetailsCBV(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+@login_required
+class TaskDetails(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Task
     template_name = 'task_details.html'
     context_object_name = 'task'
@@ -479,14 +483,14 @@ class TaskDetailsCBV(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         task.save()
         return redirect('task-details', task.id)
 
-# Main Dashboard Redirect View
-class DashboardRedirect(LoginRequiredMixin, View):
-    def get(self, request):
-        if is_manager(request.user):
-            return redirect('manager-dashboard')
-        elif is_employee(request.user):
-            return redirect('user-dashboard')
-        elif request.user.is_superuser:
-            return redirect('admin-dashboard')
-        return redirect('no-permission')
+@login_required
+def dashboard(request):
+    if is_manager(request.user):
+        return redirect('manager-dashboard')
+    elif is_employee(request.user):
+        return redirect('user-dashboard')
+    elif is_admin(request.user):
+        return redirect('admin-dashboard')
+
+    return redirect('no-permission')
 
